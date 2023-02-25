@@ -1,6 +1,6 @@
 # BFS 与 DFS
 
-## DFS(深度优先搜索,Deep First Search)
+## DFS（深度优先搜索，Deep First Search）
 
 深度优先搜索的步骤分为：
 
@@ -9,7 +9,7 @@
 
 深度优先就算一条路走到底,直达目标。
 
-## 例题一
+### 例题一
 
 以 acwing<a href="https://www.acwing.com/problem/content/844/">842.排列数字</a>为例。
 
@@ -63,9 +63,9 @@ int main(void)
 }
 ```
 
-## 例题二
+### 例题二
 
-以acwing<a href="https://www.acwing.com/problem/content/845/">843.n-皇后问题</a>为例。
+以 acwing<a href="https://www.acwing.com/problem/content/845/">843.n-皇后问题</a>为例。
 
 ```c++
 /*
@@ -85,13 +85,13 @@ bool col[N], dg[N], udg[N];
 
 void dfs(int u)
 {
-    if (u == n) 
+    if (u == n)
     {
         for (int i = 0; i < n; ++ i) printf("%s\n", q[i]);
         cout << endl;
         return;
     }
-    
+
     for (int i = 0; i < n; ++ i)
     {
         // 同列、对角线反对角线都没有放置
@@ -109,15 +109,82 @@ void dfs(int u)
 int main(void)
 {
     cin >> n;
-    
+
     for (int i = 0; i < n; ++ i)
         for (int j = 0; j < n; ++ j)
             q[i][j] = '.';
-    
+
     dfs(0);
     return 0;
 }
 ```
 
+## BFS（广度优先搜索，Breadth First Search）
+
+BFS 与 DFS 不同的地方在于，DFS 是将一条路走到底，而 BFS 则是每到一个路口，便将可以走的路口先记录下来，然后再前进。
+
+### 例题三
+
+以 acwing <a href="https://www.acwing.com/problem/content/846/">844.走迷宫</a>为例。
+
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int N = 110;
+
+int grid[N][N], d[N][N];    //grid代表数组可走与不可走的路的标记，d代表可走路与起点的距离
+int n, m;
+int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1}; //代表左下右上四个方向的向量
+
+pair<int, int> q[N * N];    //一个队列，最长为110 * 110，保存的是要搜索的坐标
+
+int bfs(void)
+{
+    int head = 0, tail = 0;    //head队头，tail队尾
+    q[0] = {0, 0}; //将起点(0,0)加入
+
+    memset(d, -1, sizeof d); // 初始化所有点距离起点为-1。方便分辨是否走过该点
+    d[0][0] = 0; //起点的距离为0
+
+    // 队列为空时才结束搜索
+    while (head <= tail)
+    {
+        //取出队头后将队头向前移动一位
+        auto current = q[head ++];
+
+        for (int i = 0; i < 4; ++ i)
+        {
+            //当前要偏移的点
+            int x = current.first + dx[i], y = current.second + dy[i];
+
+            // 限定要搜索的是在数组范围内，并且是可走路0，并且是没有走过的路-1
+            if (x >= 0 && x < n && y >= 0 && y < m && grid[x][y] == 0 && d[x][y] == -1)
+            {
+                // 偏移点的距离为目前的点的距离+1
+                d[x][y] = d[current.first][current.second] + 1;
+                q[++ tail] = {x, y};    //将偏移点的位置加入队列中，待搜索
+            }
+        }
+    }
+
+	//返回终点对于起点的距离
+    return d[n - 1][m - 1];
+}
+
+int main(void)
+{
+    cin >> n >> m;
+
+    for (int i = 0; i < n; ++ i)
+        for (int j = 0; j < m; ++ j)
+         cin >> grid[i][j];
+
+    cout << bfs();
+
+    return 0;
+}
 
 
+```
